@@ -36,7 +36,8 @@ app.use(bodyParser.json());
 
 // Ruta de registro
 app.post('/register', (req, res) => {
-  const { email, contraseña } = req.body;
+  const { email, contraseña} = req.body;
+  const rol = "usuario";
 
   // Verificar si el usuario ya existe
   const checkUserQuery = 'SELECT * FROM usuarios WHERE Email = ?';
@@ -50,8 +51,8 @@ app.post('/register', (req, res) => {
         res.status(409).send('El usuario ya existe');
       } else {
         // Registrar el nuevo usuario
-        const registerQuery = 'INSERT INTO usuarios (Email, Contraseña) VALUES (?, ?)';
-        db.query(registerQuery, [email, contraseña], (registerErr, registerResults) => {
+        const registerQuery = 'INSERT INTO usuarios (Email, Contraseña, Rol) VALUES (?, ?, ?)';
+        db.query(registerQuery, [email, contraseña, rol], (registerErr, registerResults) => {
           if (registerErr) {
             console.error('Error en el servidor:', registerErr);
             res.status(500).send('Error en el servidor');
@@ -75,10 +76,9 @@ app.post('/login', (req, res) => {
       res.status(500).send('Error en el servidor');
     } else {
       if (results.length > 0) {
-        // Generar el JWT sin expiración
-        const token = jwt.sign({ email }, 'secretoJWT'); // Modifica la clave secreta según tus necesidades
+        const user = results[0];
+        const token = jwt.sign({ email: user.Email, rol: user.Rol }, 'secretoJWT');
 
-        // Enviar el JWT al cliente y almacenarlo en una cookie HTTPOnly
         res.cookie('jwt', token, { httpOnly: true });
         res.status(200).json({ token });
       } else {

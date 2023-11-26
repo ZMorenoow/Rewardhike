@@ -1,42 +1,36 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from './utils/AuthContext';
 
 const Bienvenida = () => {
   const navigate = useNavigate();
+  const { logout } = useAuth(); 
 
   useEffect(() => {
-    // Verificar si el usuario está autenticado antes de renderizar la página
-    const isAuthenticated = checkAuthentication(); // Llama a una función para verificar la autenticación
+    const isAuthenticated = checkAuthentication();
     if (!isAuthenticated) {
-      // Si no está autenticado, redirigir a la página de inicio
-      navigate("/Principal");
+      navigate("/");
     } else {
-      // Si está autenticado, reemplazar la ubicación actual en el historial
-      // Esto evita que el usuario retroceda a páginas anteriores
       window.history.pushState(null, "", "/bienvenida");
     }
   }, [navigate]);
 
   const checkAuthentication = () => {
-    // Verifica la existencia de la cookie JWT en el cliente
     const jwtCookie = document.cookie
       .split(";")
       .find((cookie) => cookie.trim().startsWith("jwt="));
-
-    // Devuelve true si la cookie JWT está presente, de lo contrario, false
     return jwtCookie !== undefined;
   };
 
   const handleLogout = async () => {
     try {
-      // Realizar una solicitud al servidor para cerrar sesión (eliminar la cookie)
       await fetch("http://localhost:5000/logout", {
         method: "POST",
-        credentials: "include", // Incluir las cookies en la solicitud
+        credentials: "include", 
       });
 
-      // Redirigir a la página de inicio después de cerrar sesión
-      navigate("/Principal");
+      logout(); 
+      navigate("/");
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
     }
@@ -44,13 +38,11 @@ const Bienvenida = () => {
 
   return (
     <div>
-      <h2>Bienvenido/a a la Página de Invitado</h2>
-      {/* Contenido específico para la página de bienvenida */}
-
-      {/* Botón para cerrar sesión */}
+      <h2>Bienvenido/a a la Página de Bienvenida</h2>
       <button onClick={handleLogout}>Cerrar Sesión</button>
     </div>
   );
 };
 
 export default Bienvenida;
+

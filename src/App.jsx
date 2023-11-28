@@ -1,12 +1,17 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import Principal from "./Principal";
 import Registro from "./Register";
 import Login from "./Login";
 import Bienvenida from "./Bienvenida";
 import AdminDashboard from "./AdminDashboard";
 import Navbar from "./Navbar";
-import { AuthProvider } from './utils/AuthContext.jsx';
+import { AuthProvider } from "./utils/AuthContext.jsx";
 
 const App = () => {
   return (
@@ -38,4 +43,3 @@ const RouteRender = () => {
 };
 
 export default App;
-

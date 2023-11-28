@@ -43,9 +43,9 @@ const Register = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, contraseña: password}),
+        body: JSON.stringify({ email, contraseña: password }),
       });
-      
+
       if (response.status === 201) {
         // Asumiendo que la respuesta es texto plano en caso de éxito
         const text = await response.text();

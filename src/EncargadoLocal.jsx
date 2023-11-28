@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./utils/AuthContext";
 
-const Bienvenida = () => {
+const EncargadoLocal = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
 
@@ -11,7 +11,7 @@ const Bienvenida = () => {
     if (!isAuthenticated) {
       navigate("/");
     } else {
-      window.history.pushState(null, "", "/bienvenida");
+      window.history.pushState(null, "", "/EncargadoLocal");
     }
   }, [navigate]);
 
@@ -38,10 +38,10 @@ const Bienvenida = () => {
 
   return (
     <div>
-      <h2>Bienvenido/a a la Página de Bienvenida</h2>
+      <h2>Panel de Encargado Local </h2>
       <button onClick={handleLogout}>Cerrar Sesión</button>
     </div>
   );
 };
 
-export default Bienvenida;
+export default EncargadoLocal;

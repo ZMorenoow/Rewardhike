@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 
+
 const app = express();
 const port = 5000;
 
@@ -15,15 +16,6 @@ const db = mysql.createConnection({
   database: 'rewardhike',
 });
 
-// Conexión a la base de datos
-db.connect(err => {
-  if (err) {
-    console.error('Error al conectar a la base de datos:', err);
-  } else {
-    console.log('Conexión exitosa a la base de datos');
-  }
-});
-
 // Middleware
 const corsOptions = {
   origin: 'http://localhost:5173',  // Reemplaza con la URL de tu aplicación React
@@ -33,6 +25,47 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
+app.get('/usuarios', (req, res) => {
+  const query = 'SELECT Email, Rol FROM usuarios';
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error en el servidor:', err);
+      res.status(500).send('Error en el servidor');
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+app.put('/usuarios/:email', (req, res) => {
+  const { email } = req.params;
+  const { newRole } = req.body;
+
+  const updateQuery = 'UPDATE usuarios SET Rol = ? WHERE Email = ?';
+
+  db.query(updateQuery, [newRole, email], (err, result) => {
+    if (err) {
+      console.error('Error al actualizar el rol del usuario:', err);
+      res.status(500).send('Error interno del servidor');
+    } else {
+      if (result.affectedRows === 0) {
+        res.status(404).send('Usuario no encontrado');
+      } else {
+        res.send('Rol actualizado correctamente');
+      }
+    }
+  });
+});
+
+
+// Conexión a la base de datos
+db.connect(err => {
+  if (err) {
+    console.error('Error al conectar a la base de datos:', err);
+  } else {
+    console.log('Conexión exitosa a la base de datos');
+  }
+});
 
 // Ruta de registro
 app.post('/register', (req, res) => {

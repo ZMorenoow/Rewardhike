@@ -87,17 +87,54 @@ const AdminDashboard = () => {
           }
         );
 
-        if (!response.ok) {
+        if (response.ok) {
+          // Se actualizó el rol con éxito
+          alert("Rol actualizado con éxito");
+        } else {
           throw new Error("Error al actualizar el rol del usuario");
         }
       } catch (error) {
         console.error("Error al actualizar el rol:", error);
+        // Muestra la alerta de error
+        alert("No se pudo actualizar el rol");
       }
     }
   };
 
   const handleDeleteUser = async (email) => {
-    // Implementa la lógica de eliminación de usuarios aquí
+    if (
+      window.confirm(
+        `¿Estás seguro de que deseas eliminar al usuario con el correo ${email}?`
+      )
+    ) {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/usuarios/${email}`,
+          {
+            method: "DELETE",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.ok) {
+          // Eliminación exitosa
+          alert("Usuario eliminado con éxito");
+          // Actualiza la lista de usuarios después de la eliminación
+          const updatedUsers = users.filter((user) => user.Email !== email);
+          setUsers(updatedUsers);
+        } else {
+          const errorMessage = await response.text();
+          throw new Error(`Error al eliminar el usuario: ${errorMessage}`);
+        }
+      } catch (error) {
+        console.error("Error al eliminar el usuario:", error.message);
+        // Muestra la alerta de error
+        alert("No se pudo eliminar el usuario");
+      }
+    }
   };
 
   return (
@@ -113,7 +150,7 @@ const AdminDashboard = () => {
               <th>Email</th>
               <th>Rol</th>
               <th>Editar</th>
-              <th> Eliminar</th>
+              <th>Eliminar</th>
             </tr>
           </thead>
           <tbody>

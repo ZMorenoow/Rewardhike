@@ -3,7 +3,7 @@ const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
-
+const cookieParser = require('cookie-parser'); // Agregado para manejar cookies
 
 const app = express();
 const port = 5000;
@@ -24,6 +24,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
+app.use(cookieParser()); // Agregado para manejar cookies
 
 app.get('/usuarios', (req, res) => {
   const query = 'SELECT Email, Rol FROM usuarios';

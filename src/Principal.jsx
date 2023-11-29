@@ -1,15 +1,16 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import "./principal.css";
 
 const Principal = () => {
   return (
-    <div>
+    <div className="coontainer">
       <h2>Página Principal</h2>
       <Link to="/Registro">
-        <button>Ir a Registro</button>
+        <button className="button">Ir a Registro</button>
       </Link>
       <Link to="/Login">
-        <button>Ir a Login</button>
+        <button className="button">Ir a Login</button>
       </Link>
     </div>
   );

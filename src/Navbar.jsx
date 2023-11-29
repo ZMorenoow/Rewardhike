@@ -1,7 +1,7 @@
-// NavBar.js
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "./utils/AuthContext";
+import "./NavBar.css";
 
 const NavBar = () => {
   const { userRole } = useAuth();
@@ -9,13 +9,10 @@ const NavBar = () => {
   return (
     <nav>
       <Link to="/Bienvenida">Inicio</Link>
-      <br />
       {userRole === "admin" && <Link to="/Admin">Panel de Administrador</Link>}
-      <br />
       {userRole === "encargado_local" && (
         <Link to="/EncargadoLocal">Panel de Encargado Local</Link>
       )}
-      <br />
       {userRole === "encargadoQR" && (
         <Link to="/EncargadoQR">Panel de Encargado QR</Link>
       )}

@@ -139,8 +139,9 @@ const AdminDashboard = () => {
 
   return (
     <div className="admin-page">
-      <h2>Panel de Administración</h2>
-      <button onClick={handleLogout}>Cerrar Sesión</button>
+      <center>
+        <h2>Panel de Administración</h2>
+      </center>
 
       <div className="table-container">
         <h3>Usuarios:</h3>
@@ -162,6 +163,7 @@ const AdminDashboard = () => {
                     <select
                       value={usuario.Rol}
                       onChange={(e) => handleRoleChange(e, usuario.Email)}
+                      className="role-select"
                     >
                       {availableRoles.map((role) => (
                         <option key={role} value={role}>
@@ -188,6 +190,8 @@ const AdminDashboard = () => {
           </tbody>
         </table>
       </div>
+      <br />
+      <button onClick={handleLogout}>Cerrar Sesión</button>
     </div>
   );
 };

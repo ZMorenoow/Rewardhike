@@ -43,3 +43,12 @@ html, body {
   background-color: #fff;
   color: black;
 }
+
+.role-select {
+  width: 180px; /* Ajusta el ancho según tus necesidades */
+  padding: 8px;
+  font-size: 14px;
+  background-color: white;
+  color: black;
+  border-color: white;
+}

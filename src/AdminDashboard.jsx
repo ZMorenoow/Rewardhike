@@ -96,6 +96,10 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleDeleteUser = async (email) => {
+    // Implementa la lógica de eliminación de usuarios aquí
+  };
+
   return (
     <div className="admin-page">
       <h2>Panel de Administración</h2>
@@ -108,32 +112,42 @@ const AdminDashboard = () => {
             <tr>
               <th>Email</th>
               <th>Rol</th>
-              <th>Acciones</th>
+              <th>Editar</th>
+              <th> Eliminar</th>
             </tr>
           </thead>
           <tbody>
-            {users.map((usuario) => (
-              <tr key={usuario.Email}>
-                <td>{usuario.Email}</td>
-                <td>
-                  <select
-                    value={usuario.Rol}
-                    onChange={(e) => handleRoleChange(e, usuario.Email)}
-                  >
-                    {availableRoles.map((role) => (
-                      <option key={role} value={role}>
-                        {role}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td>
-                  <button onClick={() => handleUpdateRole(usuario.Email)}>
-                    Actualizar
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {users.map((usuario) =>
+              usuario.Email === "admin@gmail.com" ? null : (
+                <tr key={usuario.Email}>
+                  <td>{usuario.Email}</td>
+                  <td>
+                    <select
+                      value={usuario.Rol}
+                      onChange={(e) => handleRoleChange(e, usuario.Email)}
+                    >
+                      {availableRoles.map((role) => (
+                        <option key={role} value={role}>
+                          {role}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td>
+                    <button onClick={() => handleUpdateRole(usuario.Email)}>
+                      Actualizar
+                    </button>
+                  </td>
+                  <td>
+                    {usuario.Rol === "admin" ? null : (
+                      <button onClick={() => handleDeleteUser(usuario.Email)}>
+                        Eliminar
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              )
+            )}
           </tbody>
         </table>
       </div>

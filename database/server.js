@@ -57,7 +57,6 @@ app.put('/usuarios/:email', (req, res) => {
   });
 });
 
-
 // Conexión a la base de datos
 db.connect(err => {
   if (err) {
@@ -66,6 +65,44 @@ db.connect(err => {
     console.log('Conexión exitosa a la base de datos');
   }
 });
+
+// Ruta para eliminar usuarios (solo accesible para administradores)
+app.delete('/usuarios/:email', (req, res) => {
+  const { email } = req.params;
+
+  // Verificar si el usuario autenticado tiene el rol "admin"
+  const token = req.cookies.jwt;
+  if (!token) {
+    return res.status(401).send('No autorizado');
+  }
+
+  jwt.verify(token, 'secretoJWT', (err, decodedToken) => {
+    if (err || decodedToken.rol !== 'admin') {
+      return res.status(403).send('No tienes los permisos necesarios');
+    }
+
+    // No se permite que un administrador se elimine a sí mismo
+    if (decodedToken.email === email) {
+      return res.status(403).send('No puedes eliminarte a ti mismo');
+    }
+
+    // Eliminar el usuario de la base de datos
+    const deleteQuery = 'DELETE FROM usuarios WHERE Email = ?';
+    db.query(deleteQuery, [email], (deleteErr, deleteResult) => {
+      if (deleteErr) {
+        console.error('Error al eliminar el usuario:', deleteErr);
+        res.status(500).send('Error interno del servidor');
+      } else {
+        if (deleteResult.affectedRows === 0) {
+          res.status(404).send('Usuario no encontrado');
+        } else {
+          res.send('Usuario eliminado correctamente');
+        }
+      }
+    });
+  });
+});
+
 
 // Ruta de registro
 app.post('/register', (req, res) => {

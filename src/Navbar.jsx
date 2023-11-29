@@ -11,8 +11,13 @@ const NavBar = () => {
       <Link to="/Bienvenida">Inicio</Link>
       <br />
       {userRole === "admin" && <Link to="/Admin">Panel de Administrador</Link>}
-      {userRole === "EncargadoLocal" && (
-        <Link to="/EncargadoLocal">Panel de Administrador</Link>
+      <br />
+      {userRole === "encargado_local" && (
+        <Link to="/EncargadoLocal">Panel de Encargado Local</Link>
+      )}
+      <br />
+      {userRole === "encargadoQR" && (
+        <Link to="/EncargadoQR">Panel de Encargado QR</Link>
       )}
       {/* Más enlaces según sea necesario */}
     </nav>

@@ -1,6 +1,8 @@
+// Login.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from './utils/AuthContext'; // Asegúrate de que este es el camino correcto al archivo AuthContext
+import { useAuth } from "./utils/AuthContext"; // Asegúrate de que este es el camino correcto al archivo AuthContext
+import "./Login.css"; // Importa el nuevo archivo CSS
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -11,11 +13,9 @@ const Login = () => {
   const { login } = useAuth(); // Utiliza el hook useAuth
 
   const handleLogin = async () => {
-    // Limpiar mensajes de error al intentar iniciar sesión nuevamente
     setEmailError("");
     setPasswordError("");
 
-    // Validaciones
     if (!email.trim()) {
       setEmailError("El email es requerido");
       return;
@@ -53,9 +53,9 @@ const Login = () => {
         const decodedToken = parseJwt(data.token);
         const userRole = decodedToken.rol;
 
-        login(userRole); // Usa la función login del contexto para establecer el rol
+        login(userRole);
 
-        navigate("/bienvenida"); // Redirige a la página de bienvenida
+        navigate("/bienvenida");
       } else {
         alert("Credenciales incorrectas");
       }
@@ -66,12 +66,17 @@ const Login = () => {
 
   function parseJwt(token) {
     try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''));
-  
+      const base64Url = token.split(".")[1];
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split("")
+          .map(function (c) {
+            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+          })
+          .join("")
+      );
+
       return JSON.parse(jsonPayload);
     } catch (e) {
       return null;
@@ -79,30 +84,34 @@ const Login = () => {
   }
 
   return (
-    <div>
-      <h2>Iniciar Sesión</h2>
-      <div>
+    <div className="container">
+      <div className="form">
+        <header>Iniciar Sesión</header>
         <label>Email:</label>
         <input
           type="text"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        {emailError && <p style={{ color: "red" }}>{emailError}</p>}
+        {emailError && <p className="error">{emailError}</p>}
       </div>
-      <div>
+      <div className="form">
         <label>Contraseña:</label>
         <input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        {passwordError && <p style={{ color: "red" }}>{passwordError}</p>}
+        {passwordError && <p className="error">{passwordError}</p>}
       </div>
-      <button onClick={handleLogin}>Iniciar Sesión</button>
+      <center>
+        <button className="button" onClick={handleLogin}>
+          Iniciar Sesión
+        </button>
+      </center>
+      <br />
     </div>
   );
 };
 
 export default Login;
-

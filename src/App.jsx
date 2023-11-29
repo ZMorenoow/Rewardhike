@@ -10,6 +10,8 @@ import Registro from "./Register";
 import Login from "./Login";
 import Bienvenida from "./Bienvenida";
 import AdminDashboard from "./AdminDashboard";
+import EncargadoLocal from "./EncargadoLocal";
+import EncargadoQR from "./EncargadoQR";
 import Navbar from "./Navbar";
 import { AuthProvider } from "./utils/AuthContext.jsx";
 
@@ -37,6 +39,8 @@ const RouteRender = () => {
         <Route path="/Login" element={<Login />} />
         <Route path="/Bienvenida" element={<Bienvenida />} />
         <Route path="/Admin" element={<AdminDashboard />} />
+        <Route path="/EncargadoLocal" element={<EncargadoLocal />} />
+        <Route path="/EncargadoQR" element={<EncargadoQR />} />
       </Routes>
     </>
   );

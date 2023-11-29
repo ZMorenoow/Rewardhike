@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./utils/AuthContext";
 
-const Bienvenida = () => {
+const EncargadoQR = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
 
@@ -11,7 +11,7 @@ const Bienvenida = () => {
     if (!isAuthenticated) {
       navigate("/");
     } else {
-      window.history.pushState(null, "", "/bienvenida");
+      window.history.pushState(null, "", "/EncargadoQR");
     }
   }, [navigate]);
 
@@ -38,10 +38,10 @@ const Bienvenida = () => {
 
   return (
     <div>
-      <h2>Bienvenido/a a la Página de Bienvenida RewardHike</h2>
+      <h2>Panel de Encargado QR </h2>
       <button onClick={handleLogout}>Cerrar Sesión</button>
     </div>
   );
 };
 
-export default Bienvenida;
+export default EncargadoQR;

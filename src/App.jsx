@@ -14,6 +14,7 @@ import EncargadoLocal from "./EncargadoLocal";
 import EncargadoQR from "./EncargadoQR";
 import Navbar from "./Navbar";
 import { AuthProvider } from "./utils/AuthContext.jsx";
+import MapView from "./MapView";
 
 const App = () => {
   return (
@@ -41,6 +42,7 @@ const RouteRender = () => {
         <Route path="/Admin" element={<AdminDashboard />} />
         <Route path="/EncargadoLocal" element={<EncargadoLocal />} />
         <Route path="/EncargadoQR" element={<EncargadoQR />} />
+        <Route path="/MapView" element={<MapView />} />
       </Routes>
     </>
   );

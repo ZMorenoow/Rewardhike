@@ -10,6 +10,7 @@ const NavBar = () => {
     <nav>
       <Link to="/Bienvenida">Inicio</Link>
       {userRole === "admin" && <Link to="/Admin">Panel de Administrador</Link>}
+      {userRole === "admin" && <Link to="/MapView">Mapa de locales</Link>}
       {userRole === "encargado_local" && (
         <Link to="/EncargadoLocal">Panel de Encargado Local</Link>
       )}

@@ -3,7 +3,7 @@ const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
-const cookieParser = require('cookie-parser'); // Agregado para manejar cookies
+const cookieParser = require('cookie-parser'); 
 
 const app = express();
 const port = 5000;
@@ -18,13 +18,13 @@ const db = mysql.createConnection({
 
 // Middleware
 const corsOptions = {
-  origin: 'http://localhost:5173',  // Reemplaza con la URL de tu aplicación React
+  origin: 'http://localhost:5173', 
   credentials: true,
 };
 
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
-app.use(cookieParser()); // Agregado para manejar cookies
+app.use(cookieParser()); 
 
 app.get('/usuarios', (req, res) => {
   const query = 'SELECT Email, Rol FROM usuarios';
@@ -58,7 +58,7 @@ app.put('/usuarios/:email', (req, res) => {
   });
 });
 
-// Conexión a la base de datos
+
 db.connect(err => {
   if (err) {
     console.error('Error al conectar a la base de datos:', err);
@@ -67,11 +67,11 @@ db.connect(err => {
   }
 });
 
-// Ruta para eliminar usuarios (solo accesible para administradores)
+
 app.delete('/usuarios/:email', (req, res) => {
   const { email } = req.params;
 
-  // Verificar si el usuario autenticado tiene el rol "admin"
+
   const token = req.cookies.jwt;
   if (!token) {
     return res.status(401).send('No autorizado');
@@ -82,12 +82,12 @@ app.delete('/usuarios/:email', (req, res) => {
       return res.status(403).send('No tienes los permisos necesarios');
     }
 
-    // No se permite que un administrador se elimine a sí mismo
+
     if (decodedToken.email === email) {
       return res.status(403).send('No puedes eliminarte a ti mismo');
     }
 
-    // Eliminar el usuario de la base de datos
+
     const deleteQuery = 'DELETE FROM usuarios WHERE Email = ?';
     db.query(deleteQuery, [email], (deleteErr, deleteResult) => {
       if (deleteErr) {
@@ -105,12 +105,12 @@ app.delete('/usuarios/:email', (req, res) => {
 });
 
 
-// Ruta de registro
+
 app.post('/register', (req, res) => {
   const { email, contraseña} = req.body;
   const rol = "usuario";
 
-  // Verificar si el usuario ya existe
+
   const checkUserQuery = 'SELECT * FROM usuarios WHERE Email = ?';
   db.query(checkUserQuery, [email], (checkUserErr, checkUserResults) => {
     if (checkUserErr) {
@@ -118,10 +118,10 @@ app.post('/register', (req, res) => {
       res.status(500).send('Error en el servidor');
     } else {
       if (checkUserResults.length > 0) {
-        // El usuario ya existe
+
         res.status(409).send('El usuario ya existe');
       } else {
-        // Registrar el nuevo usuario
+
         const registerQuery = 'INSERT INTO usuarios (Email, Contraseña, Rol) VALUES (?, ?, ?)';
         db.query(registerQuery, [email, contraseña, rol], (registerErr, registerResults) => {
           if (registerErr) {
@@ -136,7 +136,7 @@ app.post('/register', (req, res) => {
   });
 });
 
-// Ruta de inicio de sesión
+
 app.post('/login', (req, res) => {
   const { email, contraseña } = req.body;
   const query = 'SELECT * FROM usuarios WHERE Email = ? AND Contraseña = ?';
@@ -159,14 +159,66 @@ app.post('/login', (req, res) => {
   });
 });
 
-// Ruta de cierre de sesión
+
+
+app.get('/obtener-localidades', (req, res) => {
+  const query = 'SELECT * FROM mapviews';
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error en el servidor:', err);
+      res.status(500).json({ success: false, message: 'Error en el servidor' });
+    } else {
+      res.json({ success: true, locations: results });
+    }
+  });
+});
+
+
+app.post('/guardar-localidad', (req, res) => {
+  const { lat, lng, nombre } = req.body;
+
+  if (!lat || !lng || !nombre) {
+    return res.status(400).send('Datos incompletos para guardar la localidad');
+  }
+
+
+  const insertQuery = 'INSERT INTO mapviews (Latitud, Longitud, Nombre) VALUES (?, ?, ?)';
+  db.query(insertQuery, [lat, lng, nombre], (err, result) => {
+    if (err) {
+      console.error('Error al guardar la localidad:', err);
+      return res.status(500).send('Error interno del servidor');
+    }
+
+    // La inserción fue exitosa
+    res.json({ success: true, message: 'Localidad guardada exitosamente' });
+  });
+});
+
+app.delete('/borrar-localidad/:id', (req, res) => {
+  const { id } = req.params;
+
+  // Aquí deberías realizar la lógica para borrar la localidad en tu base de datos
+  // Por ejemplo, podrías ejecutar una consulta DELETE en tu tabla "mapviews"
+  const deleteQuery = 'DELETE FROM mapviews WHERE id = ?';
+  db.query(deleteQuery, [id], (err, result) => {
+    if (err) {
+      console.error('Error al borrar la localidad:', err);
+      return res.status(500).send('Error interno del servidor');
+    }
+
+    // La eliminación fue exitosa
+    res.json({ success: true, message: 'Localidad borrada exitosamente' });
+  });
+});
+
+
+
 app.post('/logout', (req, res) => {
-  // Limpiar la cookie del JWT en el cliente
+
   res.clearCookie('jwt', { httpOnly: true });
 
-  // Puedes realizar otras operaciones de cierre de sesión aquí si es necesario
 
-  // Responder con éxito
+
   res.status(200).send('Sesión cerrada exitosamente');
 });
 

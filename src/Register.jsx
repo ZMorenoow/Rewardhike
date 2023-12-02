@@ -78,9 +78,11 @@ const Register = () => {
           />
           {passwordError && <p className="error">{passwordError}</p>}
         </div>
-        <button className="button" onClick={handleRegistro}>
-          Crear Cuenta
-        </button>
+        <center>
+          <button className="button" onClick={handleRegistro}>
+            Crear Cuenta
+          </button>
+        </center>
       </div>
     </div>
   );

@@ -194,16 +194,21 @@ app.post('/guardar-localidad', (req, res) => {
   });
 });
 
-app.delete('/borrar-localidad/:id', (req, res) => {
-  const { id } = req.params;
+app.delete('/borrar-localidad/:ID', (req, res) => {
+  const { ID } = req.params;
 
   // Aquí deberías realizar la lógica para borrar la localidad en tu base de datos
   // Por ejemplo, podrías ejecutar una consulta DELETE en tu tabla "mapviews"
   const deleteQuery = 'DELETE FROM mapviews WHERE id = ?';
-  db.query(deleteQuery, [id], (err, result) => {
+  db.query(deleteQuery, [ID], (err, result) => {
     if (err) {
       console.error('Error al borrar la localidad:', err);
-      return res.status(500).send('Error interno del servidor');
+      return res.status(500).json({ success: false, message: 'Error interno del servidor', error: err });
+    }
+
+    if (result.affectedRows === 0) {
+      // No se encontró ninguna fila con el ID proporcionado
+      return res.status(404).json({ success: false, message: 'No se encontró la localidad con el ID proporcionado' });
     }
 
     // La eliminación fue exitosa

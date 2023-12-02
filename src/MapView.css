@@ -4,16 +4,58 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-  }
+}
   
-  .map {
-    height: 400px;
+.map {
+    height: 600px;
     width: 100%;
     margin-bottom: 20px;
-  }
+}
   
   .locations-container {
     max-width: 600px;
     width: 100%;
-  }
+}
+.admin-page {
+    height: 100%;
+    padding: 20px;
+}
   
+input[type="text"] {
+    color: black;
+    background-color: #fff;
+}
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 20px;
+}
+  
+.mapview-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+  
+.mapview-table th,
+.mapview-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+  
+.mapview-table th {
+    background-color: #f2f2f2;
+    color: black;
+}
+  
+.mapview-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+    color: black;
+}
+  
+.mapview-table tr:nth-child(odd) {
+    background-color: #fff;
+    color: black;
+}

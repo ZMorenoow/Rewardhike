@@ -7,6 +7,8 @@ const MapView = () => {
   const [map, setMap] = useState(null);
   const [markers, setMarkers] = useState([]);
   const [locations, setLocations] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState(null);
 
   useEffect(() => {
     const location = [-38.7402, -72.59];
@@ -106,13 +108,70 @@ const MapView = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (selectedLocation) {
+      const { Latitud, Longitud, Nombre } = selectedLocation;
+      const selectedMarker = L.marker([Latitud, Longitud])
+        .addTo(map)
+        .bindPopup(Nombre)
+        .openPopup();
+
+      setMarkers((prevMarkers) => [...prevMarkers, selectedMarker]);
+    }
+  }, [selectedLocation]);
+
+  const handleRightClick = (e) => {
+    e.originalEvent.preventDefault();
+    const { lat, lng } = e.latlng;
+    const nombreLocalidad = prompt("Ingrese el nombre de la localidad:");
+    if (!nombreLocalidad) {
+      return;
+    }
+
+    fetch("http://localhost:5000/guardar-localidad", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ nombre: nombreLocalidad, lat, lng }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Respuesta del servidor:", data);
+        if (data.success) {
+          alert("Localidad guardada exitosamente");
+
+          const newLocation = {
+            id: data.id,
+            Nombre: nombreLocalidad,
+            Latitud: lat,
+            Longitud: lng,
+          };
+
+          setLocations((prevLocations) => [...prevLocations, newLocation]);
+
+          const newMarker = L.marker([lat, lng]).addTo(map);
+          newMarker.bindPopup(nombreLocalidad).openPopup();
+          setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
+        } else {
+          alert("Error al guardar la localidad");
+        }
+      })
+      .catch((error) => {
+        console.error("Error al guardar la localidad:", error);
+        alert(
+          "Error al guardar la localidad. Consulta la consola para más detalles."
+        );
+      });
+  };
+
   const handleDeleteLocation = (location) => {
     const confirmDelete = window.confirm(
       `¿Estás seguro de borrar la localidad ${location.Nombre} con latitud ${location.Latitud} y longitud ${location.Longitud}?`
     );
 
     if (confirmDelete) {
-      fetch(`http://localhost:5000/borrar-localidad/${location.id}`, {
+      fetch(`http://localhost:5000/borrar-localidad/${location.ID}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -122,10 +181,32 @@ const MapView = () => {
         .then((data) => {
           console.log("Respuesta del servidor:", data);
           if (data.success) {
-            const updatedLocations = locations.filter(
-              (loc) => loc.id !== location.id
+            // Actualizar el estado de locations después de borrar la localidad
+            setLocations((prevLocations) =>
+              prevLocations.filter((loc) => loc.id !== location.id)
             );
-            setLocations(updatedLocations);
+
+            // Eliminar el marcador del mapa
+            const updatedMarkers = markers.filter(
+              (marker) =>
+                marker.getLatLng().lat !== location.Latitud ||
+                marker.getLatLng().lng !== location.Longitud
+            );
+
+            // Limpiar todos los marcadores del mapa y agregar los actualizados
+            map.eachLayer((layer) => {
+              if (layer instanceof L.Marker) {
+                map.removeLayer(layer);
+              }
+            });
+
+            updatedMarkers.forEach((marker) => {
+              marker.addTo(map);
+            });
+
+            // Actualizar el estado de los marcadores
+            setMarkers(updatedMarkers);
+
             alert("Localidad borrada exitosamente");
           } else {
             alert("Error al borrar la localidad");
@@ -140,12 +221,43 @@ const MapView = () => {
     }
   };
 
+  const handleSearchTermChange = (event) => {
+    const term = event.target.value.toLowerCase();
+    setSearchTerm(term);
+
+    const matchingLocation = locations.find((location) => {
+      const { Nombre, Latitud, Longitud } = location;
+      const searchString = `${Nombre} ${Latitud} ${Longitud}`.toLowerCase();
+      return searchString.includes(term);
+    });
+
+    setSelectedLocation(matchingLocation);
+  };
+
+  const handleClearSearch = () => {
+    setSearchTerm("");
+    setSelectedLocation(null);
+  };
+
   return (
     <div className="map-container">
       <div id="map" className="map"></div>
       <div className="locations-container">
-        <h2>Localidades Almacenadas</h2>
-        <table>
+        <div className="search-container">
+          <label htmlFor="searchInput">Buscar Localidad:</label>
+          <input
+            type="text"
+            id="searchInput"
+            value={searchTerm}
+            onChange={handleSearchTermChange}
+          />
+          <button onClick={handleClearSearch}>Limpiar Búsqueda</button>
+        </div>
+        <br />
+        <center>
+          <h2>Localidades Almacenadas</h2>
+        </center>
+        <table className="mapview-table">
           <thead>
             <tr>
               <th>Nombre</th>

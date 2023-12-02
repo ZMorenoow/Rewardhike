@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./utils/AuthContext";
+import "./Bienvenida.css";
 
 const Bienvenida = () => {
   const navigate = useNavigate();
@@ -38,8 +39,12 @@ const Bienvenida = () => {
 
   return (
     <div>
-      <h2>Bienvenido/a a la Página de Bienvenida RewardHike</h2>
-      <button onClick={handleLogout}>Cerrar Sesión</button>
+      <br />
+      <center>
+        <h2>Bienvenido/a a la Página de Bienvenida RewardHike</h2>
+        <br />
+        <button onClick={handleLogout}>Cerrar Sesión</button>
+      </center>
     </div>
   );
 };

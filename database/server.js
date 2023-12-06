@@ -168,11 +168,10 @@ app.get('/obtener-localidades', (req, res) => {
       console.error('Error en el servidor:', err);
       res.status(500).json({ success: false, message: 'Error en el servidor' });
     } else {
-      res.json({ success: true, locations: results });
+      res.json(results);
     }
   });
 });
-
 
 app.post('/guardar-localidad', (req, res) => {
   const { lat, lng, nombre } = req.body;
@@ -181,16 +180,15 @@ app.post('/guardar-localidad', (req, res) => {
     return res.status(400).send('Datos incompletos para guardar la localidad');
   }
 
-
   const insertQuery = 'INSERT INTO mapviews (Latitud, Longitud, Nombre) VALUES (?, ?, ?)';
   db.query(insertQuery, [lat, lng, nombre], (err, result) => {
     if (err) {
-      console.error('Error al guardar la localidad:', err);
+      console.error('Error al guardar la localidad en la base de datos:', err);
       return res.status(500).send('Error interno del servidor');
     }
 
     // La inserción fue exitosa
-    res.json({ success: true, message: 'Localidad guardada exitosamente' });
+    res.json({ success: true, message: 'Localidad guardada exitosamente en la base de datos' });
   });
 });
 

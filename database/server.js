@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser'); 
+const QRCode = require('qrcode');
 
 const app = express();
 const port = 5000;
@@ -173,23 +174,34 @@ app.get('/obtener-localidades', (req, res) => {
   });
 });
 
-app.post('/guardar-localidad', (req, res) => {
-  const { lat, lng, nombre } = req.body;
+app.post('/guardar-localidad', async (req, res) => {
+  const { lat, lng, nombre, duracion, detalle } = req.body;
 
-  if (!lat || !lng || !nombre) {
+  if (!lat || !lng || !nombre || !duracion || !detalle) {
     return res.status(400).send('Datos incompletos para guardar la localidad');
   }
 
-  const insertQuery = 'INSERT INTO mapviews (Latitud, Longitud, Nombre) VALUES (?, ?, ?)';
-  db.query(insertQuery, [lat, lng, nombre], (err, result) => {
-    if (err) {
-      console.error('Error al guardar la localidad en la base de datos:', err);
-      return res.status(500).send('Error interno del servidor');
-    }
 
-    // La inserción fue exitosa
-    res.json({ success: true, message: 'Localidad guardada exitosamente en la base de datos' });
-  });
+  try {
+    // Genera el código QR
+    const qrData = `${lat},${lng},${nombre},${detalle}`;
+    const qrImage = await QRCode.toDataURL(qrData);
+
+    // Almacena la imagen del código QR en la base de datos
+    const insertQuery = 'INSERT INTO mapviews (Latitud, Longitud, Nombre, Duracion, Detalle, QRData) VALUES (?, ?, ?, ?, ?, ?)';
+    db.query(insertQuery, [lat, lng, nombre, duracion, detalle, qrImage], (err, result) => {
+      if (err) {
+        console.error('Error al guardar la localidad en la base de datos:', err);
+        return res.status(500).send('Error interno del servidor');
+      }
+
+      // La inserción fue exitosa
+      res.json({ success: true, message: 'Localidad guardada exitosamente en la base de datos' });
+    });
+  } catch (error) {
+    console.error('Error al generar el código QR:', error);
+    res.status(500).send('Error interno del servidor');
+  }
 });
 
 app.delete('/borrar-localidad/:ID', (req, res) => {

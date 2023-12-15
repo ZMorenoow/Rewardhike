@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./utils/AuthContext";
 
-const EncargadoLocal = () => {
+const EncargadoLocalEnvioCupon = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
 
@@ -11,7 +11,7 @@ const EncargadoLocal = () => {
     if (!isAuthenticated) {
       navigate("/");
     } else {
-      window.history.pushState(null, "", "/EncargadoLocal");
+      window.history.pushState(null, "", "/EncargadoLocalEnvioCupon");
     }
   }, [navigate]);
 
@@ -38,10 +38,10 @@ const EncargadoLocal = () => {
 
   return (
     <div>
-      <h2>Panel de Encargado Local </h2>
+      <h2>Envio Cupones encargado local </h2>
       <button onClick={handleLogout}>Cerrar Sesión</button>
     </div>
   );
 };
 
-export default EncargadoLocal;
+export default EncargadoLocalEnvioCupon;

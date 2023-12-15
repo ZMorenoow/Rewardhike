@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./utils/AuthContext";
 
-const EncargadoQR = () => {
+const AdminDashboardUsers = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
 
@@ -11,7 +11,7 @@ const EncargadoQR = () => {
     if (!isAuthenticated) {
       navigate("/");
     } else {
-      window.history.pushState(null, "", "/EncargadoQR");
+      window.history.pushState(null, "", "/AdminDashboardUsers");
     }
   }, [navigate]);
 
@@ -38,10 +38,14 @@ const EncargadoQR = () => {
 
   return (
     <div>
-      <h2>Panel de Encargado QR </h2>
-      <button onClick={handleLogout}>Cerrar Sesión</button>
+      <br />
+      <center>
+        <h2>Panel de usuarios</h2>
+        <br />
+        <button onClick={handleLogout}>Cerrar Sesión</button>
+      </center>
     </div>
   );
 };
 
-export default EncargadoQR;
+export default AdminDashboardUsers;

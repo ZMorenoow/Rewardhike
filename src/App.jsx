@@ -19,6 +19,8 @@ import EncargadoLocalEnvioCupon from "./EncargadoLocalEnvioCupon";
 import EncargadoLocalListaCupones from "./EncargadoLocalListaCupones";
 import EncargadoQRCupones from "./EncargadoQRCupones";
 import EncargadoQRListaCodigos from "./EncargadoQRListaCodigos";
+import MapSelector from "./MapSelector.jsx";
+import AdminReportes from "./AdminReportes.jsx";
 
 const App = () => {
   return (
@@ -63,6 +65,8 @@ const RouteRender = () => {
           path="/EncargadoQRListaCodigos"
           element={<EncargadoQRListaCodigos />}
         />
+        <Route path="/MapSelector" element={<MapSelector />} />
+        <Route path="/AdminReportes" element={<AdminReportes />} />
       </Routes>
     </>
   );

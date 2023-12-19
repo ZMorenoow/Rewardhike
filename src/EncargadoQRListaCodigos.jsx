@@ -56,7 +56,7 @@ const EncargadoQRListaCodigos = () => {
               <th>ID</th>
               <th>Local</th>
               <th>Detalle</th>
-              <th>Duracion</th>
+              <th>Duracion(hr)o(min)</th>
               <th>QR</th>
             </tr>
           </thead>

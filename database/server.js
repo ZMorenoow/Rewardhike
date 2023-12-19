@@ -5,6 +5,8 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser'); 
 const QRCode = require('qrcode');
+const qrCode = require('qrcode');
+
 
 const app = express();
 const port = 5000;
@@ -174,32 +176,29 @@ app.get('/obtener-localidades', (req, res) => {
   });
 });
 
-app.post('/guardar-localidad', async (req, res) => {
+app.post('/guardar-cupon-en-localidad', async (req, res) => {
   const { lat, lng, nombre, duracion, detalle } = req.body;
 
   if (!lat || !lng || !nombre || !duracion || !detalle) {
-    return res.status(400).send('Datos incompletos para guardar la localidad');
+    return res.status(400).send('Datos incompletos para guardar el cupón en la localidad');
   }
 
-
   try {
-    // Genera el código QR
-    const qrData = `${lat},${lng},${nombre},${detalle}`;
-    const qrImage = await QRCode.toDataURL(qrData);
-
-    // Almacena la imagen del código QR en la base de datos
-    const insertQuery = 'INSERT INTO mapviews (Latitud, Longitud, Nombre, Duracion, Detalle, QRData) VALUES (?, ?, ?, ?, ?, ?)';
-    db.query(insertQuery, [lat, lng, nombre, duracion, detalle, qrImage], (err, result) => {
+    // Genera el código QR como una imagen en base64
+    const qrCodeDataUrl = await qrCode.toDataURL(`Latitud: ${lat}, Longitud: ${lng}, Nombre: ${nombre}, Detalle: ${detalle}`);
+    
+    const insertQuery = 'INSERT INTO CuponesEnL (Latitud, Longitud, Nombre, Duracion, Detalle, QrCode) VALUES (?, ?, ?, ?, ?, ?)';
+    db.query(insertQuery, [lat, lng, nombre, duracion, detalle, qrCodeDataUrl], (err, result) => {
       if (err) {
-        console.error('Error al guardar la localidad en la base de datos:', err);
+        console.error('Error al guardar el cupón en la localidad en la base de datos:', err);
         return res.status(500).send('Error interno del servidor');
       }
 
       // La inserción fue exitosa
-      res.json({ success: true, message: 'Localidad guardada exitosamente en la base de datos' });
+      res.json({ success: true, message: 'Cupón guardado exitosamente en la localidad' });
     });
   } catch (error) {
-    console.error('Error al generar el código QR:', error);
+    console.error('Error al guardar el cupón en la localidad:', error);
     res.status(500).send('Error interno del servidor');
   }
 });
@@ -225,6 +224,86 @@ app.delete('/borrar-localidad/:ID', (req, res) => {
     res.json({ success: true, message: 'Localidad borrada exitosamente' });
   });
 });
+
+app.post('/guardar-cupon-en-localidad', async (req, res) => {
+  const { lat, lng, nombre, duracion, detalle } = req.body;
+
+  if (!lat || !lng || !nombre || !duracion || !detalle) {
+    return res.status(400).send('Datos incompletos para guardar el cupón en la localidad');
+  }
+
+  try {
+    // Genera el código QR como una imagen en base64
+    const qrCodeDataUrl = await qrCode.toDataURL(`Latitud: ${lat}, Longitud: ${lng}, Nombre: ${nombre}, Detalle: ${detalle}`);
+    
+    const insertQuery = 'INSERT INTO CuponesEnL (Latitud, Longitud, Nombre, Duracion, Detalle, QrCode) VALUES (?, ?, ?, ?, ?, ?)';
+    db.query(insertQuery, [lat, lng, nombre, duracion, detalle, qrCodeDataUrl], (err, result) => {
+      if (err) {
+        console.error('Error al guardar el cupón en la localidad en la base de datos:', err);
+        return res.status(500).send('Error interno del servidor');
+      }
+
+      // La inserción fue exitosa
+      res.json({ success: true, message: 'Cupón guardado exitosamente en la localidad' });
+    });
+  } catch (error) {
+    console.error('Error al guardar el cupón en la localidad:', error);
+    res.status(500).send('Error interno del servidor');
+  }
+});
+
+app.get('/obtener-cupones', (req, res) => {
+  const query = 'SELECT * FROM cuponesenl';
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error en el servidor:', err);
+      res.status(500).json({ success: false, message: 'Error en el servidor' });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+app.post('/enviar-cupon/:cuponID', (req, res) => {
+  const { cuponID } = req.params;
+
+  // Obtén los datos del cupón de "cuponesenl" usando el ID
+  const selectCuponQuery = 'SELECT * FROM cuponesenl WHERE ID = ?';
+  db.query(selectCuponQuery, [cuponID], (selectErr, selectResult) => {
+    if (selectErr) {
+      console.error('Error al obtener el cupón:', selectErr);
+      return res.status(500).json({ success: false, message: 'Error interno del servidor' });
+    }
+
+    // Verifica si se encontró el cupón
+    if (selectResult.length === 0) {
+      return res.status(404).json({ success: false, message: 'Cupón no encontrado' });
+    }
+
+    // Mapea las propiedades al formato de "mapviews"
+    const cuponData = selectResult[0];
+    const insertQuery = 'INSERT INTO mapviews (Latitud, Longitud, Nombre, Duracion, Detalle, QRData) VALUES (?, ?, ?, ?, ?, ?)';
+    db.query(insertQuery, [cuponData.Latitud, cuponData.Longitud, cuponData.Nombre, cuponData.Duracion, cuponData.Detalle, cuponData.QrCode], (insertErr, insertResult) => {
+      if (insertErr) {
+        console.error('Error al insertar el cupón en "mapviews":', insertErr);
+        return res.status(500).json({ success: false, message: 'Error interno del servidor' });
+      }
+
+      // Elimina el cupón de "cuponesenl" después de insertarlo en "mapviews"
+      const deleteQuery = 'DELETE FROM cuponesenl WHERE ID = ?';
+      db.query(deleteQuery, [cuponID], (deleteErr, deleteResult) => {
+        if (deleteErr) {
+          console.error('Error al eliminar el cupón de "cuponesenl":', deleteErr);
+          return res.status(500).json({ success: false, message: 'Error interno del servidor' });
+        }
+
+        // Devuelve una respuesta indicando si la operación fue exitosa
+        res.json({ success: true, message: 'Cupón enviado y eliminado correctamente' });
+      });
+    });
+  });
+});
+
 
 
 

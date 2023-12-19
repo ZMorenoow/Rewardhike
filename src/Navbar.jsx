@@ -17,6 +17,9 @@ const NavBar = () => {
       {userRole === "admin" && (
         <Link to="/AdminDashboardUsers">Panel de administrador usuarios</Link>
       )}
+      {userRole === "admin" && (
+        <Link to="/AdminReportes">Panel de Reportes</Link>
+      )}
 
       {userRole === "encargado_local" && (
         <Link to="/EncargadoLocalListaCupones">Lista de cupones local</Link>
@@ -24,6 +27,7 @@ const NavBar = () => {
       {userRole === "encargado_local" && (
         <Link to="/MapView">Mapa de locales</Link>
       )}
+
       {userRole === "encargado_local" && (
         <Link to="/EncargadoLocalEnvioCupon">Envio de cupones local</Link>
       )}
@@ -35,6 +39,7 @@ const NavBar = () => {
       {userRole === "encargadoQR" && (
         <Link to="/EncargadoQRCupones">Cupones QR</Link>
       )}
+
       {/* Más enlaces según sea necesario */}
     </nav>
   );

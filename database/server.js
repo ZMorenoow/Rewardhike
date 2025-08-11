@@ -206,8 +206,7 @@ app.post('/guardar-cupon-en-localidad', async (req, res) => {
 app.delete('/borrar-localidad/:ID', (req, res) => {
   const { ID } = req.params;
 
-  // Aquí deberías realizar la lógica para borrar la localidad en tu base de datos
-  // Por ejemplo, podrías ejecutar una consulta DELETE en tu tabla "mapviews"
+  
   const deleteQuery = 'DELETE FROM mapviews WHERE id = ?';
   db.query(deleteQuery, [ID], (err, result) => {
     if (err) {
